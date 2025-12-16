@@ -13,61 +13,60 @@ struct D2Tool {
   ComPtr<ID2D1SolidColorBrush> brush;
 };
 
+void initTool(HWND hwnd) {
+  RECT rc;
+  GetClientRect(hwnd, &rc);
+
+  D2Tool* dt = new D2Tool{};
+
+  HRESULT hr = D2D1CreateFactory(
+      D2D1_FACTORY_TYPE_SINGLE_THREADED, dt->d2dFactory.GetAddressOf()
+  );
+
+  if (FAILED(hr)) PostQuitMessage(hr);
+
+  hr = dt->d2dFactory->CreateHwndRenderTarget(
+      D2::RenderTargetProperties(),
+      D2::HwndRenderTargetProperties(
+          hwnd, D2::SizeU(rc.right - rc.left, rc.bottom - rc.top)
+      ),
+      dt->rt.GetAddressOf()
+  );
+  if (FAILED(hr)) PostQuitMessage(hr);
+
+  hr = dt->rt->CreateSolidColorBrush(
+      D2::ColorF(D2::ColorF::Green), dt->brush.GetAddressOf()
+  );
+
+  if (FAILED(hr)) PostQuitMessage(hr);
+
+  SetWindowLongPtrW(hwnd, GWLP_USERDATA, (LONG_PTR)dt);
+}
+
 LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
   switch (msg) {
-  case WM_CREATE: {
-    RECT rc;
-    GetClientRect(hwnd, &rc);
+    case WM_CREATE: {
+      initTool(hwnd);
+      return 0;
+    }
+    case WM_PAINT: {
+      RECT rc;
+      GetClientRect(hwnd, &rc);
+      auto* dt = (D2Tool*)GetWindowLongPtrW(hwnd, GWLP_USERDATA);
+      dt->rt->BeginDraw();
 
-    D2Tool *dt = new D2Tool{};
+      dt->rt->FillRectangle(
+          D2::RectF(rc.left, rc.top, rc.right, rc.bottom), dt->brush.Get()
+      );
 
-    HRESULT hr = D2D1CreateFactory(
-        D2D1_FACTORY_TYPE_SINGLE_THREADED,
-        dt->d2dFactory.GetAddressOf()
-    );
-
-    if (FAILED(hr))
-      PostQuitMessage(hr);
-
-    hr = dt->d2dFactory->CreateHwndRenderTarget(
-        D2::RenderTargetProperties(),
-        D2::HwndRenderTargetProperties(
-            hwnd,
-            D2::SizeU(rc.right - rc.left, rc.bottom - rc.top)
-        ),
-        dt->rt.GetAddressOf()
-    );
-    if (FAILED(hr))
-      PostQuitMessage(hr);
-
-    hr = dt->rt->CreateSolidColorBrush(
-        D2::ColorF(D2::ColorF::Black),
-        dt->brush.GetAddressOf()
-    );
-
-    if (FAILED(hr))
-      PostQuitMessage(hr);
-
-    SetWindowLongPtrW(hwnd, GWLP_USERDATA, (LONG_PTR)dt);
-    return 0;
-  }
-  case WM_PAINT: {
-    RECT rc;
-    GetClientRect(hwnd, &rc);
-    auto *dt = (D2Tool *)GetWindowLongPtrW(hwnd, GWLP_USERDATA);
-    dt->rt->BeginDraw();
-
-    dt->rt->DrawRectangle(
-        D2::RectF(rc.left, rc.top, rc.right, rc.bottom),
-        dt->brush.Get()
-    );
-
-    dt->rt->EndDraw();
-    return 0;
-  }
-  case WM_DESTROY:
-    PostQuitMessage(0);
-    return 0;
+      dt->rt->EndDraw();
+      return 0;
+    }
+    case WM_DESTROY:
+      auto* dt = (D2Tool*)GetWindowLongPtrW(hwnd, GWLP_USERDATA);
+      delete dt;
+      PostQuitMessage(0);
+      return 0;
   }
   return DefWindowProcW(hwnd, msg, wParam, lParam);
 }
@@ -85,14 +84,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow) {
   RegisterClassExW(&wc);
 
   HWND hwnd = CreateWindowExW(
-      0,
-      WIN_CLASS,
-      L"Resound",
-      WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-      nullptr,
-      nullptr,
-      hInst,
+      0, WIN_CLASS, L"Resound", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
+      CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, nullptr, nullptr, hInst,
       nullptr
   );
 
@@ -103,7 +96,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow) {
   ShowWindow(hwnd, nCmdShow);
 
   MSG msg;
-  while (GetMessageW(&msg, hwnd, 0, 0)) {
+  while (GetMessageW(&msg, nullptr, 0, 0) > 0) {
     TranslateMessage(&msg);
     DispatchMessageW(&msg);
   }
