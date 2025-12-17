@@ -1,6 +1,6 @@
 #include <memory>
 
-#include "../widget.h"
+#include "../header/widget.h"
 
 void Linear::layout(D2Tool& dt, const Offset& o) {
   Offset currentOffset = o;
@@ -9,11 +9,11 @@ void Linear::layout(D2Tool& dt, const Offset& o) {
   for (auto& c : children) {
     c->layout(dt, currentOffset);
     if (direction == LDirection::HORIZ) {
-      currentOffset.x += c->getSize().w;
+      currentOffset.x += c->getSize().w + gap;
       if (rect.h < c->getSize().h) rect.h = c->getSize().h;
       rect.w += c->rect.w;
     } else {
-      currentOffset.y += c->getSize().h;
+      currentOffset.y += c->getSize().h + gap;
       if (rect.w < c->getSize().w) rect.w = c->getSize().w;
       rect.h += c->rect.h;
     }

@@ -2,7 +2,7 @@
 #include <dwrite.h>
 #include <winuser.h>
 
-#include "../widget.h"
+#include "../header/widget.h"
 
 void Button::layout(D2Tool& dt, const Offset& o) {
   rect.x = o.x;
@@ -24,9 +24,3 @@ Button::Button(const std::wstring& str, function<void()> onClick)
     : label(make_unique<Text>(str)) {
   onClickCallback = onClick;
 };
-
-Widget* Button::hitTest(const Offset& mOffset) {
-  bool inX = mOffset.x >= rect.x && mOffset.x <= rect.w + rect.x;
-  bool inY = mOffset.y >= rect.y && mOffset.y <= rect.h + rect.y;
-  return inX && inY ? this : nullptr;
-}

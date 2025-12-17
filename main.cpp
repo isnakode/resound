@@ -9,7 +9,7 @@
 #include <string>
 
 #include "header/pch.h"
-#include "widget.h"
+#include "header/widget.h"
 
 D2Tool dt = D2Tool{};
 unique_ptr<Widget> widget;
@@ -101,28 +101,15 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
       widget = make_unique<Linear>(LDirection::HORIZ,
           Linear{
               LDirection::VERT,
-              Button{L"Halo"},
-              Button{
-                  L"ini contoh",
-                  []() {
-                    MessageBoxW(
-                        nullptr, L"contoh button", L"title", MB_OKCANCEL);
-                  },
-              },
-              Linear{
-                  LDirection::HORIZ,
-                  Button{L"Halo 1"},
-                  Button{L"Halo 2"},
-                  Text{L"Contoh teks"},
-                  Linear{
-                      LDirection::VERT,
-                      Button{L"Halo vert 1"},
-                      Button{L"Halo vert 1"},
-                  },
-              },
+              Button{L"ini contoh"}.setPadding(16, 4),
+              Checkbox{},
+              Checkbox{true},
+              Radio{},
+              Radio{true},
               Button{L"Halo"},
               Button{L"Halo"},
-          },
+          }
+              .setGap(8),
           Button{L"Oi isnaini"});
       widget->layout(dt, Offset{0, 0});
       return 0;

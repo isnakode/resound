@@ -3,13 +3,14 @@
 #include <memory>
 #include <utility>
 
-#include "header/pch.h"
+#include "pch.h"
 
 struct Widget {
   Rect rect;
   function<void()> onClickCallback;
 
   Widget() : rect{0, 0, 0, 0} {};
+  virtual ~Widget() = default;
 
   virtual Size getSize() { return Size{rect.w, rect.h}; }
   virtual Offset getPos() { return Offset{rect.x, rect.y}; }
@@ -19,7 +20,11 @@ struct Widget {
 
   virtual void draw(D2Tool& dt) = 0;
   virtual void layout(D2Tool& dt, const Offset& o) = 0;
-  virtual Widget* hitTest(const Offset& mOffset) = 0;
+  virtual Widget* hitTest(const Offset& mOffset) {
+    bool inX = mOffset.x >= rect.x && mOffset.x <= rect.w + rect.x;
+    bool inY = mOffset.y >= rect.y && mOffset.y <= rect.h + rect.y;
+    return inX && inY ? this : nullptr;
+  }
 };
 
 // text
@@ -29,10 +34,31 @@ struct Text : Widget {
 
   void draw(D2Tool& dt) override;
   void layout(D2Tool& dt, const Offset& o) override;
-  Widget* hitTest(const Offset& mOffset) override;
 
  private:
   ComPtr<IDWriteTextLayout> textLayout;
+};
+
+// Checkbox
+struct Checkbox : Widget {
+  bool value;
+  Checkbox(bool value = false);
+
+  void draw(D2Tool& dt) override;
+  void onClick() override;
+  void layout(D2Tool& dt, const Offset& o) override;
+
+ private:
+  ComPtr<ID2D1PathGeometry> path;
+};
+
+struct Radio : Widget {
+  bool value;
+  Radio(bool value = false);
+
+  void draw(D2Tool& dt) override;
+  void onClick() override;
+  void layout(D2Tool& dt, const Offset& o) override;
 };
 
 // button
@@ -42,19 +68,30 @@ struct Button : Widget {
 
   void draw(D2Tool& dt) override;
   void layout(D2Tool& dt, const Offset& o) override;
-  Widget* hitTest(const Offset& mOffset) override;
 
-  Button&& setPadding(int all) {
+  Button&& setPadding(int all) && {
     this->padding = Padding{all, all, all, all};
     return std::move(*this);
   }
-  Button&& setPadding(int h, int v) {
+  Button&& setPadding(int h, int v) && {
     this->padding = Padding{h, v, h, v};
     return std::move(*this);
   }
-  Button&& setPadding(int l, int t, int r, int b) {
+  Button&& setPadding(int l, int t, int r, int b) && {
     this->padding = Padding{l, t, r, b};
     return std::move(*this);
+  }
+  Button& setPadding(int all) & {
+    this->padding = Padding{all, all, all, all};
+    return *this;
+  }
+  Button& setPadding(int h, int v) & {
+    this->padding = Padding{h, v, h, v};
+    return *this;
+  }
+  Button& setPadding(int l, int t, int r, int b) & {
+    this->padding = Padding{l, t, r, b};
+    return *this;
   }
 
  private:
@@ -75,8 +112,18 @@ struct Linear : Widget {
   void draw(D2Tool& dt) override;
   void layout(D2Tool& dt, const Offset& o) override;
 
+  Linear&& setGap(int gap) && {
+    this->gap = gap;
+    return std::move(*this);
+  }
+  Linear& setGap(int gap) & {
+    this->gap = gap;
+    return *this;
+  }
+
  private:
   vector<unique_ptr<Widget>> children;
+  int gap = 0;
 };
 
 template <typename... T>
