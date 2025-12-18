@@ -38,14 +38,19 @@ struct Point {
   // static Point zero() { return Point{0, 0}; };
 };
 
+using Offset = Point;
+
 struct Rect {
   int x, y, w, h;
+
+  Rect(int x, int y, int w, int h) : x(x), y(y), w(w), h(h) {}
+
+  Offset center() { return Offset{x + w / 2, y + h / 2}; }
 };
 struct Padding {
   int l, t, r, b;
 };
 
-using Offset = Point;
 using Margin = Padding;
 
 struct Size {

@@ -6,6 +6,11 @@ add_executable(resound WIN32)
 
 target_compile_definitions(resound PRIVATE UNICODE _UNICODE)
 
+target_precompile_headers(resound
+  PRIVATE
+  header/pch.h
+)
+
 target_sources(resound
   PRIVATE
 
@@ -15,4 +20,6 @@ target_sources(resound
   widgets/text.cpp
   widgets/checkbox.cpp
   widgets/radio.cpp
+  widgets/progress.cpp
+  widgets/slider.cpp
 )

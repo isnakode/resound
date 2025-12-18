@@ -20,13 +20,10 @@ void Checkbox::onClick() { value = !value; }
 void Checkbox::draw(D2Tool& dt) {
   dt.brush->SetColor(D2::ColorF(D2::ColorF::Black));
   auto rc = D2::RectF(rect.x, rect.y, rect.w + rect.x, rect.h + rect.y);
+  dt.rt->DrawRoundedRectangle(D2::RoundedRect(rc, 4, 4), dt.brush.Get());
   if (value) {
     dt.rt->FillRoundedRectangle(D2::RoundedRect(rc, 4, 4), dt.brush.Get());
     dt.brush->SetColor(D2::ColorF(D2::ColorF::White));
-  } else {
-    dt.rt->DrawRoundedRectangle(D2::RoundedRect(rc, 4, 4), dt.brush.Get());
-    dt.brush->SetColor(D2::ColorF(D2::ColorF::White, 0));
+    dt.rt->DrawGeometry(path.Get(), dt.brush.Get(), 2.0f);  // outline
   }
-
-  dt.rt->DrawGeometry(path.Get(), dt.brush.Get(), 2.0f);  // outline
 }

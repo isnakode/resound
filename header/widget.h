@@ -61,6 +61,27 @@ struct Radio : Widget {
   void layout(D2Tool& dt, const Offset& o) override;
 };
 
+struct Progress : Widget {
+  float start;
+  float end;
+  Progress(float value = .0f) : Progress(.0f, value) {}
+  Progress(float start, float end);
+
+  void draw(D2Tool& dt) override;
+  void layout(D2Tool& dt, const Offset& o) override;
+};
+
+struct Slider : Widget {
+  float start;
+  float end;
+  bool showStartHandle = false;
+  Slider(float value = .0f);
+  Slider(float start, float end);
+
+  void draw(D2Tool& dt) override;
+  void layout(D2Tool& dt, const Offset& o) override;
+};
+
 // button
 struct Button : Widget {
   std::wstring text;
@@ -69,15 +90,15 @@ struct Button : Widget {
   void draw(D2Tool& dt) override;
   void layout(D2Tool& dt, const Offset& o) override;
 
-  Button&& setPadding(int all) && {
+  Button setPadding(int all) && {
     this->padding = Padding{all, all, all, all};
     return std::move(*this);
   }
-  Button&& setPadding(int h, int v) && {
+  Button setPadding(int h, int v) && {
     this->padding = Padding{h, v, h, v};
     return std::move(*this);
   }
-  Button&& setPadding(int l, int t, int r, int b) && {
+  Button setPadding(int l, int t, int r, int b) && {
     this->padding = Padding{l, t, r, b};
     return std::move(*this);
   }
