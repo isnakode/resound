@@ -22,4 +22,5 @@ target_sources(resound
   widgets/radio.cpp
   widgets/progress.cpp
   widgets/slider.cpp
+  widgets/image.cpp
 )

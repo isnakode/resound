@@ -7,6 +7,7 @@
 #include "header/pch.h"
 #include "widgets/button.h"
 #include "widgets/checkbox.h"
+#include "widgets/image.h"
 #include "widgets/linear.h"
 #include "widgets/progress.h"
 #include "widgets/radio.h"
@@ -53,6 +54,14 @@ void initTool(HWND hwnd) {
           hwnd, D2::SizeU(rc.right - rc.left, rc.bottom - rc.top)
       ),
       dt.rt.GetAddressOf()
+  );
+  if (FAILED(hr)) PostQuitMessage(hr);
+
+  hr = CoCreateInstance(
+      CLSID_WICImagingFactory,
+      nullptr,
+      CLSCTX_INPROC_SERVER,
+      IID_PPV_ARGS(dt.wicFactory.GetAddressOf())
   );
   if (FAILED(hr)) PostQuitMessage(hr);
 
@@ -111,20 +120,26 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow) {
 LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
   switch (msg) {
     case WM_CREATE: {
+      CoInitialize(NULL);
       initTool(hwnd);
       auto btns = Row{Button{L"1"}, Button{L"1=2"}.setPadding(8), Button{L"3"}};
       root =
-          Column{
-              Checkbox{},
-              Radio{},
-              Progress{.3f},
-              Progress{.3f, .8f},
-              std::move(btns),
-              Text{L"Contoh slider"},
-              Slider{.3f},
-              Slider{.3f, .7f}
+          Row{
+              Column{
+                  Checkbox{},
+                  Radio{},
+                  Progress{.3f},
+                  Progress{.3f, .8f},
+                  std::move(btns),
+                  Text{L"Contoh slider"},
+                  Slider{.3f},
+                  Slider{.3f, .7f}
+              }
+                  .setGap(8),
+              Image{L"cpp.jpeg"}.setWidth(360),
+              Image{L"cpp.png"}.setWidth(150).setHeight(40),
           }
-              .setGap(8);
+              .setGap(10);
       root.layout(dt, Offset{0, 0});
       return 0;
     }

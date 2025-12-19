@@ -12,7 +12,7 @@ it come with several component such as
 - [ ] Dropdown
 - [ ] Grid
 - [ ] Input
-- [ ] Image
+- [x] Image
 - [x] Progress bar
 - [ ] Modal
 - [x] Slider
