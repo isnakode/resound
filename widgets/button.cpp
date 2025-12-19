@@ -1,8 +1,4 @@
-#include <d2d1helper.h>
-#include <dwrite.h>
-#include <winuser.h>
-
-#include "../header/widget.h"
+#include "button.h"
 
 void Button::layout(D2Tool& dt, const Offset& o) {
   rect.x = o.x;
@@ -24,3 +20,35 @@ Button::Button(const std::wstring& str, function<void()> onClick)
     : label(make_unique<Text>(str)) {
   onClickCallback = onClick;
 };
+
+// ===== rvalue overloads =====
+Button Button::setPadding(int all) && {
+  padding = Padding{all, all, all, all};
+  return std::move(*this);
+}
+
+Button Button::setPadding(int h, int v) && {
+  padding = Padding{h, v, h, v};
+  return std::move(*this);
+}
+
+Button Button::setPadding(int l, int t, int r, int b) && {
+  padding = Padding{l, t, r, b};
+  return std::move(*this);
+}
+
+// ===== lvalue overloads =====
+Button& Button::setPadding(int all) & {
+  padding = Padding{all, all, all, all};
+  return *this;
+}
+
+Button& Button::setPadding(int h, int v) & {
+  padding = Padding{h, v, h, v};
+  return *this;
+}
+
+Button& Button::setPadding(int l, int t, int r, int b) & {
+  padding = Padding{l, t, r, b};
+  return *this;
+}

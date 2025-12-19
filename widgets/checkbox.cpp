@@ -1,4 +1,4 @@
-#include "../header/widget.h"
+#include "checkbox.h"
 
 Checkbox::Checkbox(bool value) : value(value) { rect = Rect{0, 0, 20, 20}; }
 
@@ -8,8 +8,10 @@ void Checkbox::layout(D2Tool& dt, const Offset& o) {
   dt.d2dFactory->CreatePathGeometry(&path);
   ComPtr<ID2D1GeometrySink> sink;
   path->Open(&sink);
-  sink->BeginFigure(D2D1::Point2F(rect.x + rect.w * .2, rect.y + rect.h * .55),
-      D2D1_FIGURE_BEGIN_FILLED);
+  sink->BeginFigure(
+      D2D1::Point2F(rect.x + rect.w * .2, rect.y + rect.h * .55),
+      D2D1_FIGURE_BEGIN_FILLED
+  );
   sink->AddLine(D2D1::Point2F(rect.x + rect.w * .4, rect.y + rect.h * .7));
   sink->AddLine(D2D1::Point2F(rect.x + rect.w * .8, rect.y + rect.h * .35));
   sink->EndFigure(D2D1_FIGURE_END_OPEN);

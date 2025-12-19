@@ -2,10 +2,12 @@
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "dwrite.lib")
 #pragma comment(lib, "shcore.lib")
+#pragma comment(lib, "windowscodecs.lib")
 
 #include <ShellScalingApi.h>
 #include <d2d1.h>
 #include <dwrite.h>
+#include <wincodec.h>
 #include <windows.h>
 #include <wrl/client.h>
 
@@ -30,6 +32,7 @@ struct D2Tool {
   ComPtr<ID2D1Factory> d2dFactory;
   ComPtr<IDWriteFactory> dwFactory;
   ComPtr<IDWriteTextFormat> dwFormat;
+  ComPtr<IWICImagingFactory> wicFactory;
 };
 
 struct Point {

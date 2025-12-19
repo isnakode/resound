@@ -1,6 +1,4 @@
-#include <memory>
-
-#include "../header/widget.h"
+#include "linear.h"
 
 void Linear::layout(D2Tool& dt, const Offset& o) {
   Offset currentOffset = o;
@@ -32,3 +30,13 @@ Widget* Linear::hitTest(const Offset& mOffset) {
   }
   return nullptr;
 };
+
+Linear&& Linear::setGap(int gap) && {
+  this->gap = gap;
+  return std::move(*this);
+}
+
+Linear& Linear::setGap(int gap) & {
+  this->gap = gap;
+  return *this;
+}

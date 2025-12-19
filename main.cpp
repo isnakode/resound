@@ -1,18 +1,21 @@
 #include <d2d1helper.h>
-#include <dwrite.h>
 #include <minwindef.h>
 #include <unknwnbase.h>
 #include <windef.h>
 #include <winuser.h>
 
-#include <memory>
-#include <string>
-
 #include "header/pch.h"
-#include "header/widget.h"
+#include "widgets/button.h"
+#include "widgets/checkbox.h"
+#include "widgets/linear.h"
+#include "widgets/progress.h"
+#include "widgets/radio.h"
+#include "widgets/slider.h"
+#include "widgets/text.h"
+#include "widgets/widget.h"
 
 D2Tool dt = D2Tool{};
-unique_ptr<Widget> root;
+Column root;
 
 void initTool(HWND hwnd) {
   RECT rc;
@@ -109,19 +112,20 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
   switch (msg) {
     case WM_CREATE: {
       initTool(hwnd);
-      root = make_unique<Linear>(
-          LDirection::VERT,
-          Button{L"ini contoh"}.setPadding(16, 4),
-          Checkbox{},
-          Radio{},
-          Progress{.3f},
-          Progress{.3f, .8f},
-          Text{L"Contoh slider"},
-          Slider{.3f},
-          Slider{.3f, .7f}
-      );
-      dynamic_cast<Linear*>(root.get())->setGap(8);
-      root->layout(dt, Offset{0, 0});
+      auto btns = Row{Button{L"1"}, Button{L"1=2"}.setPadding(8), Button{L"3"}};
+      root =
+          Column{
+              Checkbox{},
+              Radio{},
+              Progress{.3f},
+              Progress{.3f, .8f},
+              std::move(btns),
+              Text{L"Contoh slider"},
+              Slider{.3f},
+              Slider{.3f, .7f}
+          }
+              .setGap(8);
+      root.layout(dt, Offset{0, 0});
       return 0;
     }
     case WM_LBUTTONDOWN: {
@@ -131,7 +135,7 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
       float dpi = GetDpiForWindow(hwnd);
       g_DPIScale = dpi / USER_DEFAULT_SCREEN_DPI;
 
-      auto w = root->hitTest(Offset{int(x / g_DPIScale), int(y / g_DPIScale)});
+      auto w = root.hitTest(Offset{int(x / g_DPIScale), int(y / g_DPIScale)});
       if (w) {
         w->onClick();
       }
@@ -145,7 +149,7 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
       dt.rt->Clear(D2::ColorF(D2::ColorF::Green));
 
-      root->draw(dt);
+      root.draw(dt);
 
       dt.rt->EndDraw();
       EndPaint(hwnd, &ps);

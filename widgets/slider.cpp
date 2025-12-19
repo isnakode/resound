@@ -1,4 +1,4 @@
-#include "../header/widget.h"
+#include "slider.h"
 
 Slider::Slider(float value) : start(.0f), end(value) {
   rect = Rect{0, 0, 100, 20};
