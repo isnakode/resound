@@ -48,8 +48,12 @@ struct Rect {
 
   Rect(int x, int y, int w, int h) : x(x), y(y), w(w), h(h) {}
 
+  int bottom() { return y + h; }
+  int right() { return x + w; }
+
   Offset center() { return Offset{x + w / 2, y + h / 2}; }
 };
+
 struct Padding {
   int l, t, r, b;
 };

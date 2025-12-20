@@ -136,8 +136,8 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                   Slider{.3f, .7f}
               }
                   .setGap(8),
-              Image{L"cpp.jpeg"}.setWidth(360),
-              Image{L"cpp.png"}.setWidth(150).setHeight(40),
+              Image{L"cpp.jpeg"}.setWidth(800),
+              Image{L"cpp.jpeg"}.setWidth(100).setHeight(40),
           }
               .setGap(10);
       root.layout(dt, Offset{0, 0});
