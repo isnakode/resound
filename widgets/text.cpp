@@ -18,7 +18,7 @@ void Text::layout(D2Tool& dt, const Offset& o) {
 }
 
 void Text::draw(D2Tool& dt) {
-  dt.brush->SetColor(D2::ColorF(D2::ColorF::Black));
+  dt.brush->SetColor(D2::ColorF(D2::ColorF::White));
   dt.rt->DrawTextLayout(
       D2::Point2F(rect.x, rect.y), textLayout.Get(), dt.brush.Get()
   );

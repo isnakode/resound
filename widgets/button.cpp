@@ -10,7 +10,7 @@ void Button::layout(D2Tool& dt, const Offset& o) {
 }
 
 void Button::draw(D2Tool& dt) {
-  dt.brush->SetColor(D2::ColorF(D2::ColorF::White));
+  dt.brush->SetColor(D2::ColorF(D2::ColorF::Black));
   auto rc = D2::RectF(rect.x, rect.y, rect.w + rect.x, rect.h + rect.y);
   dt.rt->FillRoundedRectangle(D2::RoundedRect(rc, 4, 4), dt.brush.Get());
   label->draw(dt);

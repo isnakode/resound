@@ -22,14 +22,7 @@ struct Linear : Widget {
 
 template <typename... T>
 Linear::Linear(LDirection dir, T&&... args) : direction(dir) {
-  using expander = int[];
-  (void)expander{
-      0,
-      (children.push_back(
-           std::make_unique<std::decay_t<T>>(std::forward<T>(args))
-       ),
-       0)...
-  };
+  (children.push_back(std::forward<T>(args)), ...);
 };
 
 struct Row : Linear {

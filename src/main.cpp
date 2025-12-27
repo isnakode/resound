@@ -4,19 +4,14 @@
 #include <windef.h>
 #include <winuser.h>
 
-#include "header/pch.h"
-#include "widgets/button.h"
-#include "widgets/checkbox.h"
-#include "widgets/image.h"
-#include "widgets/linear.h"
-#include "widgets/progress.h"
-#include "widgets/radio.h"
-#include "widgets/slider.h"
-#include "widgets/text.h"
-#include "widgets/widget.h"
+#include "../header/pch.h"
+#include "../widgets/widget.h"
+#include "app.h"
 
 D2Tool dt = D2Tool{};
-Column root;
+unique_ptr<Widget> root;
+
+void runApp(unique_ptr<Widget> widget) { root = std::move(widget); }
 
 void initTool(HWND hwnd) {
   RECT rc;
@@ -122,25 +117,8 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     case WM_CREATE: {
       CoInitialize(NULL);
       initTool(hwnd);
-      auto btns = Row{Button{L"1"}, Button{L"1=2"}.setPadding(8), Button{L"3"}};
-      root =
-          Row{
-              Column{
-                  Checkbox{},
-                  Radio{},
-                  Progress{.3f},
-                  Progress{.3f, .8f},
-                  std::move(btns),
-                  Text{L"Contoh slider"},
-                  Slider{.3f},
-                  Slider{.3f, .7f}
-              }
-                  .setGap(8),
-              Image{L"cpp.jpeg"}.setWidth(800),
-              Image{L"cpp.jpeg"}.setWidth(100).setHeight(40),
-          }
-              .setGap(10);
-      root.layout(dt, Offset{0, 0});
+      main();
+      root->layout(dt, Offset{0, 0});
       return 0;
     }
     case WM_LBUTTONDOWN: {
@@ -150,7 +128,7 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
       float dpi = GetDpiForWindow(hwnd);
       g_DPIScale = dpi / USER_DEFAULT_SCREEN_DPI;
 
-      auto w = root.hitTest(Offset{int(x / g_DPIScale), int(y / g_DPIScale)});
+      auto w = root->hitTest(Offset{int(x / g_DPIScale), int(y / g_DPIScale)});
       if (w) {
         w->onClick();
       }
@@ -161,10 +139,9 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
       PAINTSTRUCT ps;
       BeginPaint(hwnd, &ps);
       dt.rt->BeginDraw();
+      dt.rt->Clear(D2::ColorF(D2::ColorF::White));
 
-      dt.rt->Clear(D2::ColorF(D2::ColorF::Green));
-
-      root.draw(dt);
+      root->draw(dt);
 
       dt.rt->EndDraw();
       EndPaint(hwnd, &ps);

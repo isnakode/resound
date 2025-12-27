@@ -14,7 +14,8 @@ target_precompile_headers(resound
 target_sources(resound
   PRIVATE
 
-  main.cpp
+  src/main.cpp
+  src/app.cpp
   widgets/button.cpp
   widgets/linear.cpp
   widgets/text.cpp
