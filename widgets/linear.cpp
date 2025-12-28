@@ -1,11 +1,19 @@
 #include "linear.h"
 
-void Linear::layout(D2Tool& dt, const Offset& o) {
+void Linear::layout(D2Tool& dt, Offset o, optional<Size> size) {
+  // int flexCount = 0;
+  // int fixedTotal = 0;
+  // for (auto& c : children) {
+  //   if (c->flexWidth > 0) {
+  //     flexCount++;
+  //   }
+  // }
   Offset currentOffset = o;
   rect.x = o.x;
   rect.y = o.y;
   for (auto& c : children) {
     c->layout(dt, currentOffset);
+
     if (direction == LDirection::HORIZ) {
       currentOffset.x += c->getSize().w + gap;
       if (rect.h < c->getSize().h) rect.h = c->getSize().h;

@@ -9,7 +9,7 @@ Slider::Slider(float start, float end)
   rect = Rect{0, 0, 100, 20};
 }
 
-void Slider::layout(D2Tool& dt, const Offset& o) {
+void Slider::layout(D2Tool& dt, Offset o, optional<Size> size) {
   rect.x = o.x;
   rect.y = o.y;
 }

@@ -9,26 +9,26 @@ void Image::draw(D2Tool& dt) {
   dt.rt->DrawBitmap(bitmap.Get(), rc);
 }
 
-void Image::layout(D2Tool& dt, const Offset& o) {
+void Image::layout(D2Tool& dt, Offset o, optional<Size> size) {
   rect.x = o.x;
   rect.y = o.y;
   HRESULT hr = dt.wicFactory->CreateDecoderFromFilename(
-      filename.c_str(),
-      nullptr,
-      GENERIC_READ,
-      WICDecodeMetadataCacheOnDemand,
-      decoder.GetAddressOf()
+    filename.c_str(),
+    nullptr,
+    GENERIC_READ,
+    WICDecodeMetadataCacheOnDemand,
+    decoder.GetAddressOf()
   );
   if (FAILED(hr)) {
     MessageBoxW(
-        nullptr, (std::to_wstring(hr)).c_str(), L"Error decoder", MB_OKCANCEL
+      nullptr, (std::to_wstring(hr)).c_str(), L"Error decoder", MB_OKCANCEL
     );
   }
   hr = decoder->GetFrame(0, &frame);
 
   if (FAILED(hr)) {
     MessageBoxW(
-        nullptr, (std::to_wstring(hr)).c_str(), L"Error decoder", MB_OKCANCEL
+      nullptr, (std::to_wstring(hr)).c_str(), L"Error decoder", MB_OKCANCEL
     );
   }
   IWICFormatConverter* converter;
@@ -36,23 +36,23 @@ void Image::layout(D2Tool& dt, const Offset& o) {
 
   if (FAILED(hr)) {
     MessageBoxW(
-        nullptr, (std::to_wstring(hr)).c_str(), L"Error convert", MB_OKCANCEL
+      nullptr, (std::to_wstring(hr)).c_str(), L"Error convert", MB_OKCANCEL
     );
   }
   hr = converter->Initialize(
-      frame.Get(),
-      GUID_WICPixelFormat32bppPBGRA,
-      WICBitmapDitherTypeNone,
-      nullptr,
-      0.f,
-      WICBitmapPaletteTypeCustom
+    frame.Get(),
+    GUID_WICPixelFormat32bppPBGRA,
+    WICBitmapDitherTypeNone,
+    nullptr,
+    0.f,
+    WICBitmapPaletteTypeCustom
   );
   if (FAILED(hr)) {
     MessageBoxW(
-        nullptr,
-        (std::to_wstring(hr)).c_str(),
-        L"Error convert initialize",
-        MB_OKCANCEL
+      nullptr,
+      (std::to_wstring(hr)).c_str(),
+      L"Error convert initialize",
+      MB_OKCANCEL
     );
   }
   dt.rt->CreateBitmapFromWicBitmap(converter, nullptr, bitmap.GetAddressOf());

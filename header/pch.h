@@ -13,6 +13,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,6 +23,7 @@ namespace D2 = D2D1;
 using Microsoft::WRL::ComPtr;
 using std::function;
 using std::make_unique;
+using std::optional;
 using std::string;
 using std::unique_ptr;
 using std::vector;
@@ -56,6 +58,11 @@ struct Rect {
 
 struct Padding {
   int l, t, r, b;
+
+  Padding(int all) : l(all), t(all), r(all), b(all) {}
+  Padding(int horizontal, int vertical)
+      : l(horizontal), t(vertical), r(horizontal), b(vertical) {}
+  Padding(int l, int t, int r, int b) : l(l), t(t), r(r), b(b) {}
 };
 
 using Margin = Padding;
@@ -63,3 +70,10 @@ using Margin = Padding;
 struct Size {
   int w, h;
 };
+
+struct Window {
+  int width;
+  int height;
+};
+
+inline Window window{};

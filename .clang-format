@@ -3,6 +3,7 @@
 BasedOnStyle: GOOGLE
 AlignAfterOpenBracket: false
 IndentWidth: 2
+ContinuationIndentWidth: 2
 BinPackArguments: false
 ---
 Language: Cpp

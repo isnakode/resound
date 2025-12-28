@@ -10,8 +10,7 @@ struct Linear : Widget {
 
   Widget* hitTest(const Offset& mOffset) override;
   void draw(D2Tool& dt) override;
-  void layout(D2Tool& dt, const Offset& o) override;
-
+  void layout(D2Tool& dt, Offset o, optional<Size> size) override;
   Linear&& setGap(int gap) &&;
   Linear& setGap(int gap) &;
 
@@ -25,14 +24,18 @@ Linear::Linear(LDirection dir, T&&... args) : direction(dir) {
   (children.push_back(std::forward<T>(args)), ...);
 };
 
-struct Row : Linear {
-  template <typename... T>
-  Row(T&&... children)
-      : Linear(LDirection::HORIZ, std::forward<T>(children)...) {}
-};
+// struct Row : Linear {
+//   template <typename... T>
+//   Row(T&&... children)
+//       : Linear(LDirection::HORIZ, std::forward<T>(children)...) {}
+// };
 
-struct Column : Linear {
-  template <typename... T>
-  Column(T&&... children)
-      : Linear(LDirection::VERT, std::forward<T>(children)...) {}
-};
+template <typename... T>
+unique_ptr<Widget> Row(T&&... children) {
+  return make_unique<Linear>(LDirection::HORIZ, std::forward<T>(children)...);
+}
+
+template <typename... T>
+unique_ptr<Widget> Column(T&&... children) {
+  return make_unique<Linear>(LDirection::VERT, std::forward<T>(children)...);
+}

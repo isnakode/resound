@@ -18,50 +18,50 @@ void initTool(HWND hwnd) {
   GetClientRect(hwnd, &rc);
 
   HRESULT hr = D2D1CreateFactory(
-      D2D1_FACTORY_TYPE_SINGLE_THREADED, dt.d2dFactory.GetAddressOf()
+    D2D1_FACTORY_TYPE_SINGLE_THREADED, dt.d2dFactory.GetAddressOf()
   );
 
   if (FAILED(hr)) PostQuitMessage(hr);
 
   hr = DWriteCreateFactory(
-      DWRITE_FACTORY_TYPE_SHARED,
-      __uuidof(IDWriteFactory),
-      reinterpret_cast<IUnknown**>(dt.dwFactory.GetAddressOf())
+    DWRITE_FACTORY_TYPE_SHARED,
+    __uuidof(IDWriteFactory),
+    reinterpret_cast<IUnknown**>(dt.dwFactory.GetAddressOf())
   );
 
   if (FAILED(hr)) PostQuitMessage(hr);
   hr = dt.dwFactory->CreateTextFormat(
-      L"Arial",
-      nullptr,
-      DWRITE_FONT_WEIGHT_REGULAR,
-      DWRITE_FONT_STYLE_NORMAL,
-      DWRITE_FONT_STRETCH_NORMAL,
-      16,
-      L"id",
-      dt.dwFormat.GetAddressOf()
+    L"Arial",
+    nullptr,
+    DWRITE_FONT_WEIGHT_REGULAR,
+    DWRITE_FONT_STYLE_NORMAL,
+    DWRITE_FONT_STRETCH_NORMAL,
+    16,
+    L"id",
+    dt.dwFormat.GetAddressOf()
   );
 
   if (FAILED(hr)) PostQuitMessage(hr);
 
   hr = dt.d2dFactory->CreateHwndRenderTarget(
-      D2::RenderTargetProperties(),
-      D2::HwndRenderTargetProperties(
-          hwnd, D2::SizeU(rc.right - rc.left, rc.bottom - rc.top)
-      ),
-      dt.rt.GetAddressOf()
+    D2::RenderTargetProperties(),
+    D2::HwndRenderTargetProperties(
+      hwnd, D2::SizeU(rc.right - rc.left, rc.bottom - rc.top)
+    ),
+    dt.rt.GetAddressOf()
   );
   if (FAILED(hr)) PostQuitMessage(hr);
 
   hr = CoCreateInstance(
-      CLSID_WICImagingFactory,
-      nullptr,
-      CLSCTX_INPROC_SERVER,
-      IID_PPV_ARGS(dt.wicFactory.GetAddressOf())
+    CLSID_WICImagingFactory,
+    nullptr,
+    CLSCTX_INPROC_SERVER,
+    IID_PPV_ARGS(dt.wicFactory.GetAddressOf())
   );
   if (FAILED(hr)) PostQuitMessage(hr);
 
   hr = dt.rt->CreateSolidColorBrush(
-      D2::ColorF(D2::ColorF::Green), dt.brush.GetAddressOf()
+    D2::ColorF(D2::ColorF::Green), dt.brush.GetAddressOf()
   );
 
   if (FAILED(hr)) PostQuitMessage(hr);
@@ -83,18 +83,18 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow) {
   RegisterClassExW(&wc);
 
   HWND hwnd = CreateWindowExW(
-      0,
-      WIN_CLASS,
-      L"Resound",
-      WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT,
-      CW_USEDEFAULT,
-      CW_USEDEFAULT,
-      CW_USEDEFAULT,
-      nullptr,
-      nullptr,
-      hInst,
-      nullptr
+    0,
+    WIN_CLASS,
+    L"Resound",
+    WS_OVERLAPPEDWINDOW,
+    CW_USEDEFAULT,
+    CW_USEDEFAULT,
+    CW_USEDEFAULT,
+    CW_USEDEFAULT,
+    nullptr,
+    nullptr,
+    hInst,
+    nullptr
   );
 
   if (!hwnd) {
@@ -121,6 +121,14 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
       root->layout(dt, Offset{0, 0});
       return 0;
     }
+    case WM_SIZE: {
+      RECT rc;
+      GetClientRect(hwnd, &rc);
+      window.height = rc.bottom - rc.top;
+      window.width = rc.right - rc.left;
+      dt.rt->Resize(D2::SizeU(rc.right - rc.left, rc.bottom - rc.top));
+      return 0;
+    }
     case WM_LBUTTONDOWN: {
       int x = LOWORD(lParam);
       int y = HIWORD(lParam);
@@ -145,12 +153,6 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
       dt.rt->EndDraw();
       EndPaint(hwnd, &ps);
-      return 0;
-    }
-    case WM_SIZE: {
-      RECT rc;
-      GetClientRect(hwnd, &rc);
-      dt.rt->Resize(D2::SizeU(rc.right - rc.left, rc.bottom - rc.top));
       return 0;
     }
     case WM_DESTROY: {
