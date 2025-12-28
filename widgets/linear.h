@@ -1,6 +1,6 @@
 #include "widget.h"
 // linear
-enum class LDirection { VERT, HORIZ };
+enum class LDirection { VERT, HORIZ, STACK };
 
 struct Linear : Widget {
   LDirection direction;
@@ -24,12 +24,6 @@ Linear::Linear(LDirection dir, T&&... args) : direction(dir) {
   (children.push_back(std::forward<T>(args)), ...);
 };
 
-// struct Row : Linear {
-//   template <typename... T>
-//   Row(T&&... children)
-//       : Linear(LDirection::HORIZ, std::forward<T>(children)...) {}
-// };
-
 template <typename... T>
 unique_ptr<Widget> Row(T&&... children) {
   return make_unique<Linear>(LDirection::HORIZ, std::forward<T>(children)...);
@@ -38,4 +32,9 @@ unique_ptr<Widget> Row(T&&... children) {
 template <typename... T>
 unique_ptr<Widget> Column(T&&... children) {
   return make_unique<Linear>(LDirection::VERT, std::forward<T>(children)...);
+}
+
+template <typename... T>
+unique_ptr<Widget> Stack(T&&... children) {
+  return make_unique<Linear>(LDirection::STACK, std::forward<T>(children)...);
 }

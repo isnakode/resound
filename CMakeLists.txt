@@ -19,6 +19,7 @@ target_sources(resound
   src/main.cpp
   src/app.cpp
   widgets/button.cpp
+  widgets/dialog.cpp
   widgets/linear.cpp
   widgets/text.cpp
   widgets/checkbox.cpp

@@ -4,6 +4,7 @@
 #include "../header/pch.h"
 #include "../widgets/button.h"
 #include "../widgets/checkbox.h"
+#include "../widgets/dialog.h"
 #include "../widgets/image.h"
 #include "../widgets/linear.h"
 #include "../widgets/progress.h"
@@ -13,13 +14,16 @@
 #include "../widgets/widget.h"
 
 unique_ptr<Widget> Home() {
-  return Button(
-    L"Click me",
-    {
-      .padding = Padding{8, 90},
-      .onClick =
-        []() { MessageBoxW(nullptr, L"caption", L"judul", MB_OKCANCEL); },
-    }
+  return Row(
+    Button(
+      L"Click me",
+      {
+        .padding = Padding{8, 90},
+        .onClick =
+          []() { MessageBoxW(nullptr, L"caption", L"judul", MB_OKCANCEL); },
+      }
+    ),
+    Dialog(L"judul", L"caption")
   );
 }
 
