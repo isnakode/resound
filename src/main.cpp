@@ -16,7 +16,9 @@
 D2Tool dt = D2Tool{};
 unique_ptr<Widget> root;
 
-void runApp(unique_ptr<Widget> widget) { root = Stack({}, std::move(widget)); }
+void runApp(unique_ptr<Widget> widget) {
+  root = Stack(children(std::move(widget)));
+}
 
 void initTool(HWND hwnd) {
   RECT rc;
@@ -77,6 +79,14 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow) {
   SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
   const wchar_t WIN_CLASS[] = L"WIN_CLASS";
+
+  int argc = 0;
+  LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+  if (argc > 0) {
+    window.filename = argv[1];
+  }
+
+  LocalFree(argv);
 
   WNDCLASSEXW wc{};
   wc.lpszClassName = WIN_CLASS;
@@ -155,7 +165,7 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
       float dpi = GetDpiForWindow(hwnd);
       g_DPIScale = dpi / USER_DEFAULT_SCREEN_DPI;
 
-      auto w = root->hitTest(Offset{int(x / g_DPIScale), int(y / g_DPIScale)});
+      auto w = root->hitTest(Offset{x / g_DPIScale, y / g_DPIScale});
       if (w && w->onClickCallback) {
         w->onClick();
       }

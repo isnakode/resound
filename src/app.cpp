@@ -14,7 +14,7 @@
 #include "../widgets/widget.h"
 
 unique_ptr<Widget> Home() {
-  return Row({}, Image(L"C:\\Users\\isnaini\\Downloads\\circle_glow.png"));
+  return Row(children(Image(L"cpp.jpeg", {80, 80})));
 }
 
 void main() { runApp(Home()); }

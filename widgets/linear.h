@@ -1,3 +1,4 @@
+#pragma once
 #include "widget.h"
 // linear
 enum class LinearType { Col, Row, Stack };
@@ -17,11 +18,10 @@ struct LinearConfig {
 };
 
 template <typename... T>
-vector<unique_ptr<Widget>> children(T&&... args) {
-  vector<unique_ptr<Widget>> vec;
-  vec.reserve(sizeof...(args));
-  (vec.push_back(std::move(args)), ...);
-  return vec;
+deque<unique_ptr<Widget>> children(T&&... args) {
+  deque<unique_ptr<Widget>> dec;
+  (dec.push_back(std::move(args)), ...);
+  return dec;
 }
 
 struct Linear : Widget {
@@ -34,10 +34,12 @@ struct Linear : Widget {
     children.push_back(std::move(child));
   }
 
-  template <typename... T>
-  Linear(const LinearConfig& cfg = {}, T&&... args) : config(cfg) {
-    (addChild(std::forward<T>(args)), ...);
-  };
+  Linear(deque<unique_ptr<Widget>> childList, const LinearConfig& cfg = {})
+      : config(cfg), children(std::move(childList)) {
+    for (auto& c : children) {
+      c->parent = this;  // set parent
+    }
+  }
 
   Widget* hitTest(const Offset& mOffset) override;
   void draw(D2Tool& dt) override;
@@ -49,20 +51,23 @@ struct Linear : Widget {
   int gap = 0;
 };
 
-template <typename... T>
-unique_ptr<Widget> Row(LinearConfig cfg, T&&... children) {
+inline unique_ptr<Widget> Row(
+  deque<unique_ptr<Widget>> children, LinearConfig cfg = {}
+) {
   cfg.direction = LinearType::Row;
-  return make_unique<Linear>(cfg, std::forward<T>(children)...);
+  return make_unique<Linear>(std::move(children), cfg);
 }
 
-template <typename... T>
-unique_ptr<Widget> Column(LinearConfig cfg, T&&... children) {
+inline unique_ptr<Widget> Col(
+  deque<unique_ptr<Widget>> children, LinearConfig cfg = {}
+) {
   cfg.direction = LinearType::Col;
-  return make_unique<Linear>(cfg, std::forward<T>(children)...);
+  return make_unique<Linear>(std::move(children), cfg);
 }
 
-template <typename... T>
-unique_ptr<Widget> Stack(LinearConfig cfg, T&&... children) {
+inline unique_ptr<Widget> Stack(
+  deque<unique_ptr<Widget>> children, LinearConfig cfg = {}
+) {
   cfg.direction = LinearType::Stack;
-  return make_unique<Linear>(cfg, std::forward<T>(children)...);
+  return make_unique<Linear>(std::move(children), cfg);
 }

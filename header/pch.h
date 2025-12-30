@@ -8,9 +8,12 @@
 #include <d2d1.h>
 #include <dwrite.h>
 #include <wincodec.h>
+
+#define NOMINMAX
 #include <windows.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <deque>
 #include <functional>
 #include <memory>
@@ -22,6 +25,7 @@
 namespace D2 = D2D1;
 
 using Microsoft::WRL::ComPtr;
+using std::deque;
 using std::function;
 using std::make_unique;
 using std::optional;
@@ -39,7 +43,7 @@ struct D2Tool {
 };
 
 struct Point {
-  int x, y;
+  float x, y;
 
   // static Point zero() { return Point{0, 0}; };
 };
@@ -47,12 +51,12 @@ struct Point {
 using Offset = Point;
 
 struct Rect {
-  int x, y, w, h;
+  float x, y, w, h;
 
-  Rect(int x, int y, int w, int h) : x(x), y(y), w(w), h(h) {}
+  Rect(float x, float y, float w, float h) : x(x), y(y), w(w), h(h) {}
 
-  int bottom() { return y + h; }
-  int right() { return x + w; }
+  float bottom() { return y + h; }
+  float right() { return x + w; }
 
   Offset center() { return Offset{x + w / 2, y + h / 2}; }
 };
@@ -69,13 +73,14 @@ struct Padding {
 using Margin = Padding;
 
 struct Size {
-  int w, h;
+  float w, h;
 };
 
 struct Window {
-  int width;
-  int height;
+  float width;
+  float height;
   HWND hwnd;
+  std::wstring filename;
 };
 
 inline Window window{};
