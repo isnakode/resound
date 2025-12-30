@@ -11,6 +11,7 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include <deque>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -74,6 +75,7 @@ struct Size {
 struct Window {
   int width;
   int height;
+  HWND hwnd;
 };
 
 inline Window window{};

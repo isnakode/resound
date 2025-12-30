@@ -1,24 +1,16 @@
 #include "linear.h"
 
 void Linear::layout(D2Tool& dt, Offset o, optional<Size> size) {
-  // int flexCount = 0;
-  // int fixedTotal = 0;
-  // for (auto& c : children) {
-  //   if (c->flexWidth > 0) {
-  //     flexCount++;
-  //   }
-  // }
   Offset currentOffset = o;
   rect.x = o.x;
   rect.y = o.y;
   for (auto& c : children) {
     c->layout(dt, currentOffset);
-
-    if (direction == LDirection::HORIZ) {
+    if (config.direction == LinearType::Row) {
       currentOffset.x += c->getSize().w + gap;
       if (rect.h < c->getSize().h) rect.h = c->getSize().h;
       rect.w += c->rect.w;
-    } else {
+    } else if (config.direction == LinearType::Col) {
       currentOffset.y += c->getSize().h + gap;
       if (rect.w < c->getSize().w) rect.w = c->getSize().w;
       rect.h += c->rect.h;
@@ -38,13 +30,3 @@ Widget* Linear::hitTest(const Offset& mOffset) {
   }
   return nullptr;
 };
-
-Linear&& Linear::setGap(int gap) && {
-  this->gap = gap;
-  return std::move(*this);
-}
-
-Linear& Linear::setGap(int gap) & {
-  this->gap = gap;
-  return *this;
-}

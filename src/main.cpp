@@ -4,14 +4,19 @@
 #include <windef.h>
 #include <winuser.h>
 
+#include <iostream>
+
 #include "../header/pch.h"
+#include "../widgets/button.h"
+#include "../widgets/dialog.h"
+#include "../widgets/linear.h"
 #include "../widgets/widget.h"
 #include "app.h"
 
 D2Tool dt = D2Tool{};
 unique_ptr<Widget> root;
 
-void runApp(unique_ptr<Widget> widget) { root = std::move(widget); }
+void runApp(unique_ptr<Widget> widget) { root = Stack({}, std::move(widget)); }
 
 void initTool(HWND hwnd) {
   RECT rc;
@@ -82,7 +87,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow) {
 
   RegisterClassExW(&wc);
 
-  HWND hwnd = CreateWindowExW(
+  window.hwnd = CreateWindowExW(
     0,
     WIN_CLASS,
     L"Resound",
@@ -97,11 +102,11 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow) {
     nullptr
   );
 
-  if (!hwnd) {
+  if (!window.hwnd) {
     return 0;
   }
 
-  ShowWindow(hwnd, nCmdShow);
+  ShowWindow(window.hwnd, nCmdShow);
 
   MSG msg;
   while (GetMessageW(&msg, nullptr, 0, 0) > 0) {
@@ -118,17 +123,31 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
       CoInitialize(NULL);
       initTool(hwnd);
       main();
-      root->layout(dt, Offset{0, 0});
+
       return 0;
     }
     case WM_SIZE: {
-      RECT rc;
-      GetClientRect(hwnd, &rc);
-      window.height = rc.bottom - rc.top;
-      window.width = rc.right - rc.left;
-      dt.rt->Resize(D2::SizeU(rc.right - rc.left, rc.bottom - rc.top));
+      int h = HIWORD(lParam);
+      int w = LOWORD(lParam);
+
+      // Ambil DPI scale
+      float dpi = float(GetDpiForWindow(hwnd));
+      float g_DPIScale = dpi / USER_DEFAULT_SCREEN_DPI;
+
+      // Simpan ukuran logical window (untuk layout)
+      window.width = int(w / g_DPIScale);
+      window.height = int(h / g_DPIScale);
+
+      // Resize render target (pakai pixel fisik)
+      dt.rt->Resize(D2::SizeU(w, h));
+
+      // Layout root dengan ukuran logical
+      root->layout(dt, Offset{0, 0}, Size{window.width, window.height});
+
+      InvalidateRect(hwnd, nullptr, true);
       return 0;
     }
+
     case WM_LBUTTONDOWN: {
       int x = LOWORD(lParam);
       int y = HIWORD(lParam);
@@ -137,9 +156,10 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
       g_DPIScale = dpi / USER_DEFAULT_SCREEN_DPI;
 
       auto w = root->hitTest(Offset{int(x / g_DPIScale), int(y / g_DPIScale)});
-      if (w) {
+      if (w && w->onClickCallback) {
         w->onClick();
       }
+      return 0;
     }
     case WM_PAINT: {
       RECT rc;

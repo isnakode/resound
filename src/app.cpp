@@ -14,17 +14,7 @@
 #include "../widgets/widget.h"
 
 unique_ptr<Widget> Home() {
-  return Row(
-    Button(
-      L"Click me",
-      {
-        .padding = Padding{8, 90},
-        .onClick =
-          []() { MessageBoxW(nullptr, L"caption", L"judul", MB_OKCANCEL); },
-      }
-    ),
-    Dialog(L"judul", L"caption")
-  );
+  return Row({}, Image(L"C:\\Users\\isnaini\\Downloads\\circle_glow.png"));
 }
 
 void main() { runApp(Home()); }

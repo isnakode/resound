@@ -3,3 +3,4 @@
 
 void runApp(unique_ptr<Widget> widget);
 void main();
+void showDialog();

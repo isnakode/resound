@@ -4,6 +4,7 @@
 struct Widget {
   Rect rect;
   int flexWidth = 0;
+  Widget* parent = nullptr;
 
   function<void()> onClickCallback;
 

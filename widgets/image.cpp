@@ -1,15 +1,15 @@
 #include "image.h"
 
-Image::Image(const std::wstring& filename) : filename(filename) {
+WgImage::WgImage(const std::wstring& filename) : filename(filename) {
   rect = {0, 0, 80, 80};
 }
 
-void Image::draw(D2Tool& dt) {
+void WgImage::draw(D2Tool& dt) {
   auto rc = D2::RectF(rect.x, rect.y, rect.x + rect.w, rect.y + rect.h);
   dt.rt->DrawBitmap(bitmap.Get(), rc);
 }
 
-void Image::layout(D2Tool& dt, Offset o, optional<Size> size) {
+void WgImage::layout(D2Tool& dt, Offset o, optional<Size> size) {
   rect.x = o.x;
   rect.y = o.y;
   HRESULT hr = dt.wicFactory->CreateDecoderFromFilename(
@@ -61,23 +61,6 @@ void Image::layout(D2Tool& dt, Offset o, optional<Size> size) {
   }
 }
 
-Image& Image::setWidth(int value) & {
-  rect.w = value;
-  return *this;
-}
-
-Image Image::setWidth(int value) && {
-  rect.w = value;
-  return std::move(*this);
-}
-Image& Image::setHeight(int value) & {
-  userSetHeight = true;
-  rect.h = value;
-  return *this;
-}
-
-Image Image::setHeight(int value) && {
-  userSetHeight = true;
-  rect.h = value;
-  return std::move(*this);
+unique_ptr<WgImage> Image(const std::wstring& filename) {
+  return make_unique<WgImage>(filename);
 }
